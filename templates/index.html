@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Face Expression Image Classification</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<style>
+    body {
+        background: #13042e;
+        color: aliceblue;
+    }
+</style>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Upload Human Face Expression Image</h1>
+        <form id="upload-form" enctype="multipart/form-data" class="text-center">
+            <div class="form-group">
+                <label for="image">Choose an image:</label>
+                <input type="file" name="image" id="image" class="form-control my-2" placeholder="Please upload a human faces expression" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Predict Expression</button>
+        </form>
+        <div id="prediction-message" class="mt-4 text-center alert alert-info" style="display: none;"></div>
+        <div id="results" class="mt-4">
+            <!-- Results will be displayed here in a horizontal manner -->
+            <center>
+                <div id="results-horizontal" class="d-flex flex-wrap text-dark">
+                </div>
+            </center>
+            <!-- Uploaded Image will be displayed here -->
+            <center>
+                <img src="#" id="uploaded-image" class="img-fluid mb-4 d-none">
+            </center>
+        </div>
+    </div>
+    <!-- Remove the container if you want to extend the Footer to full width. -->
+    <div class="mt-2">
+        <footer class="text-center text-white">
+            <!-- Copyright -->
+            <div class="text-center text-dark p-3" style="background-color: rgba(157, 157, 157, 0.2);">
+                <span class="text-white" style="font-size: larger;">© 2023 CopyRight:</span>
+                <a class="text-dark" href="#" style="text-decoration: none;"><span
+                        style="color: white;font-size: larger;">Rishu Kumar Gupta </span>|<span
+                        style="color: #d58010;font-weight: bolder;font-size: larger;">Human Face Expression
+                        Detection</span></a>
+            </div>
+            <!-- Copyright -->
+        </footer>
+    </div>
+    <!-- Include Bootstrap JS (Optional) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById("upload-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            // Display the prediction message
+            const predictionMessageDiv = document.getElementById("prediction-message");
+            predictionMessageDiv.innerHTML = "Prediction in progress...🔎🔎";
+            predictionMessageDiv.style.display = "block";
+
+            fetch("/classify", {
+                    method: "POST",
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear the prediction message
+                    predictionMessageDiv.style.display = "none";
+
+                    const resultsHorizontalDiv = document.getElementById("results-horizontal");
+                    resultsHorizontalDiv.innerHTML = ""; // Clear previous results
+                    const uploadedImage = document.getElementById("uploaded-image");
+                    uploadedImage.classList.add("d-none"); // Hide uploaded image by default
+
+                    data.results.forEach(result => {
+                        const label = result[0];
+                        const probability = result[1];
+                        const resultElement = document.createElement("div");
+                        resultElement.classList.add("card", "m-2", "p-2");
+                        resultElement.style.width = "200px"; // Set a fixed width for each result card
+
+                        resultElement.innerHTML = `
+                            <p class="mb-0">${label}</p>
+                            <p class="mb-0">${(probability * 100).toFixed(2)}%</p>
+                        `;
+
+                        resultsHorizontalDiv.appendChild(resultElement);
+                    });
+
+                    // Display the uploaded image
+                    const imageFile = formData.get("image");
+                    if (imageFile) {
+                        const imageUrl = URL.createObjectURL(imageFile);
+                        uploadedImage.src = imageUrl;
+                        uploadedImage.classList.remove("d-none"); // Show uploaded image
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+
+                    // Display an error message if the image is not supported
+                    predictionMessageDiv.innerHTML = "Image format not supported😒😔.Please upload the different image!";
+                    predictionMessageDiv.style.display = "block";
+                    predictionMessageDiv.classList.remove("alert-info");
+                    predictionMessageDiv.classList.add("alert-danger");
+                });
+        });
+    </script>
+</body>
+
+</html>
