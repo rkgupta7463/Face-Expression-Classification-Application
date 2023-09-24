@@ -8,7 +8,8 @@ The Human Face Expression Classification project allows you to upload a human fa
 
 Website Link: [https://humanfaceexpressiondetection.pythonanywhere.com/]
 
-![image](https://github.com/rkgupta7463/Face-Expression-Classification-Application/assets/96177171/cc1cb027-9f17-4284-9f24-3b7beb3a1f23)
+![image](https://github.com/rkgupta7463/Face-Expression-Classification-Application/assets/96177171/ea1f6408-842d-4449-82ab-6e5eeacf5d04)
+
 
 
 ## Installation
